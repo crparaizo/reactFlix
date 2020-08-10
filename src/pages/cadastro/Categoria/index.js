@@ -3,39 +3,45 @@ import { Link } from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm'
 
 function CadastroCategoria() {
   const [categorias, setCategoria] = useState([]);
 
-  const valoresIniciais = {
-    nome: '',
+  const valuesIniciais = {
+    titulo: '',
     descricao: '',
     cor: '',
   };
 
-  const [valores, setValores] = useState(valoresIniciais); // state que guarda o texto que é digitado
+  const { handlerChange, values, clearForm } = useForm(valuesIniciais);
 
-  function setValor(chave, valor) { // parametros recebe chave e valor do campo
-    // chave: nome, descricao,...
-    setValores({
-      ...valores,
-      [chave]: valor, // nome: 'valor'
-    });
-  }
+  // const [values, setValues] = useState(valuesIniciais); // state que guarda o texto que é digitado
 
-  // console.log('[valores]', valores);
+  // function setValor(chave, value) { // parametros recebe chave e value do campo
+  //   // chave: titulo, descricao,...
+  //   setValues({
+  //     ...values,
+  //     [chave]: value, // titulo: 'value'
+  //   });
+  // }
 
-  function handlerChange(infosDoEvento) {
-    // const { getAttribute, valor } = infosDoEvento.target;
-    // setValor(getAttribute('name'), valor);
+  // // console.log('[values]', values);
 
-    setValor(infosDoEvento.target.getAttribute('name'), infosDoEvento.target.value);
-  }
+  // function handlerChange(infosDoEvento) {
+  //   // const { getAttribute, value } = infosDoEvento.target;
+  //   // setValor(getAttribute('name'), value);
+
+  //   setValor(infosDoEvento.target.getAttribute('name'), infosDoEvento.target.value);
+  // }
 
   useEffect(() => {
-    console.log('asdf'); //o que vai acontecer
+    console.log('Teste'); //o que vai acontecer
 
-    const URL = 'http://localhost:8080/categorias';
+    const URL = window.location.hostname.includes('localhost')
+      ? 'http://localhost:8080/categorias'
+      : 'https://candyflix.herokuapp.com/categorias';
+
     fetch(URL)
       .then(async (respostaDoServidor) => {
         const resposta = await respostaDoServidor.json();
@@ -49,13 +55,13 @@ function CadastroCategoria() {
     //       setCategoria([
     //         ...categorias, {
     //           "id": 1,
-    //           "nome": "Front End",
+    //           "titulo": "Front End",
     //           "descricao": "Top",
     //           "cor": "#cbd1ff"
     //         },
     //         {
     //           "id": 1,
-    //           "nome": "Back End",
+    //           "titulo": "Back End",
     //           "descricao": "Eita",
     //           "cor": "#cbd1ff"
     //         }
@@ -67,7 +73,7 @@ function CadastroCategoria() {
     <PageDefault>
       <h1>
         Cadastro de Categoria
-        {valores.nome}
+        {values.titulo}
       </h1>
 
       <form onSubmit={function handlerSubmit(infosDoEvento) {
@@ -75,36 +81,36 @@ function CadastroCategoria() {
         // console.log('Você tentou enviar')
         setCategoria([
           ...categorias, // itens já armazenados na lista
-          valores, // novo item
+          values, // novo item
         ]);
 
-        setValores(valoresIniciais);
+        clearForm();
       }}
       >
 
         <FormField
-          label="Nome da Categoria"
-          value={valores.nome}
+          label="Título da Categoria"
+          value={values.titulo}
           onChange={handlerChange}
           type="text"
-          name="nome"
+          name="titulo"
         />
 
         <div>
 
           {/*
           <label>
-            Nome da Categoria:
+            titulo da Categoria:
           <input
               type="text"
-              name="nome"
-              value={valores['nome']}
+              name="titulo"
+              value={values['titulo']}
               onChange={handlerChange
                 //testes:
-                // console.log('[valores]', valores);
+                // console.log('[values]', values);
                 // console.log('[infosDoEvento.target.value]', infosDoEvento.target.value); //target: alvo da mudança que estamos fazendo
 
-                // setValor('nome',infosDoEvento.target.value);
+                // setValor('titulo',infosDoEvento.target.value);
                 //ou
                 // setValor(infosDoEvento.target.getAttribute('name'), infosDoEvento.target.value);
               }
@@ -116,7 +122,7 @@ function CadastroCategoria() {
               Descrição:
           <textarea
                 type="text"
-                value={valores.descricao}
+                value={values.descricao}
                 name="descricao"
                 onChange={handlerChange}
               />
@@ -127,18 +133,18 @@ function CadastroCategoria() {
             label="Descrição"
             type="textarea"
             name="descricao"
-            value={valores.descricao}
+            value={values.descricao}
             onChange={handlerChange}
           />
 
           {/* Mudança de BackGround */}
-          {/* (form:) style={{background: {nomeDaCategoria}}}
+          {/* (form:) style={{background: {tituloDaCategoria}}}
 
            <input
                 type="color"
-                value={valores}
+                value={values}
                 onChange={function funcaoHandler(infosDoEvento) {
-                  setValores(infosDoEvento.target.value);
+                  setValues(infosDoEvento.target.value);
                 }}
               />
           */}
@@ -148,7 +154,7 @@ function CadastroCategoria() {
               Cor:
           <input
                 type="color"
-                value={valores.cor}
+                value={values.cor}
                 name="cor"
                 onChange={handlerChange}
               />
@@ -159,7 +165,7 @@ function CadastroCategoria() {
             label="Cor"
             type="color"
             name="cor"
-            value={valores.cor}
+            value={values.cor}
             onChange={handlerChange}
           />
 
@@ -179,15 +185,15 @@ function CadastroCategoria() {
       {/* <ul>
         {categorias.map((categoria, indice) => (
           <li key={`${categoria}${indice}`}>
-            {categoria.nome}
+            {categoria.titulo}
           </li>
         ))}
       </ul> */}
 
       <ul>
         {categorias.map((categoria) => (
-          <li key={`${categoria.nome}`}>
-            {categoria.nome}
+          <li key={`${categoria.titulo}`}>
+            {categoria.titulo}
           </li>
         ))}
       </ul>
